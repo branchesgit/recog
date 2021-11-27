@@ -1,0 +1,11 @@
+#include <QCoreApplication>
+#include "utils/File.h"
+
+
+int main(int argc, char *argv[])
+{
+    QCoreApplication a(argc, argv);
+    File file;
+    
+    return a.exec();
+}
