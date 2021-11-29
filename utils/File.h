@@ -14,6 +14,8 @@ public:
     std::string readFile(std::string filePath);
 
     Json::Value parse(string str);
+
+    bool createDirectory(string filePath);
 };
 
 #endif // FILE_H

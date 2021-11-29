@@ -4,6 +4,12 @@
 #include <fstream>
 
 
+#include <bits/stdc++.h>
+#include <iostream>
+#include <sys/stat.h>
+#include <sys/types.h>
+
+
 File::File()
 
 {
@@ -32,4 +38,12 @@ Json::Value File::parse(string str) {
     Json::Reader reader;
     reader.parse(str, root);
     return root;
+}
+
+// create direcotry.
+bool File::createDirectory(string filePath)
+{
+    string command = "mkdir -p " + filePath;
+    int status = std::system(command.c_str());
+    return status == -1 ? false : true;
 }

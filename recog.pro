@@ -13,7 +13,9 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     utils/File.cpp \
-    utils/boundary.cpp
+    utils/boundary.cpp \
+    utils/cutting.cpp \
+    utils/choice.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -26,7 +28,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 HEADERS += utils/File.h \
-    utils/boundary.h
+    utils/boundary.h \
+    utils/cutting.h \
+    utils/choice.h
 
 INCLUDEPATH += /home/branches/clibs/jsoncpp/include \
              /home/branches/clibs/jsoncpp/src/lib_json \
