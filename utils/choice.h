@@ -9,7 +9,10 @@ class Choice
 {
 public:
     Choice();
+
     void handleRecognition(string choiceFilePath);
+
+    void fillBoundary(vector<Point> points);
 };
 
 #endif // CHOICE_H

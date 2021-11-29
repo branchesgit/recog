@@ -1,5 +1,6 @@
 #include "choice.h"
 #include "boundary.h"
+#include <opencv2/core.hpp>
 
 using namespace std;
 
@@ -46,16 +47,47 @@ void Choice::handleRecognition(string choiceFilePath)
     }
 
     cout << "degree = " << degree << endl;
+    for(int i = 0; i < contours.size(); i++)
+    {
+        RotatedRect minRect = minAreaRect(contours[i]);
+        Rect rect = boundingRect(contours[i]);
+        if(rect.area() > 100 && rect.area() < 2000)
+        {
+          rectangle(mat, rect, (0, 0, 0), CV_FILLED);
+        }
+    }
 
-    Point center = Point(mat.cols / 2, mat.rows / 2);
-    double angle = degree;
-    double scale = 1;
-    Mat rot(2, 3, CV_32FC1);
-    rot = getRotationMatrix2D(center, angle, scale);//getRotationMatrix2D():以X轴正方形为起点，顺时针为负，逆时针为正
-    Mat rotimage;
-    warpAffine(mat, rotimage, rot, mat.size());
-    imshow("rotimage", rotimage);
+    Mat imageGray = mat.clone(), imageGuussian;
+    cv::Mat  element = cv::getStructuringElement(0, cv::Size(7, 7));
+    morphologyEx(imageGray, imageGray, cv::MORPH_CLOSE, element);
+    morphologyEx(imageGray, imageGray, cv::MORPH_CLOSE, element);
+    morphologyEx(imageGray, imageGray, cv::MORPH_CLOSE, element);
+    erode(imageGray, imageGray, element);
+    erode(imageGray, imageGray, element);
+    erode(imageGray, imageGray, element);
+    blur(imageGray, imageGuussian, cv::Size(3, 3));
+
+    //5.均值滤波，消除高频噪声
+
+    cv::Mat imageSobleOutThreshold;
+    threshold(imageGuussian, imageSobleOutThreshold, 180, 255, CV_THRESH_BINARY);
+
+    imshow("imageSobleOutThreshold", imageSobleOutThreshold);
     waitKey(0);
 
+//    Point center = Point(mat.cols / 2, mat.rows / 2);
+//    double angle = degree;
+//    double scale = 1;
+//    Mat rot(2, 3, CV_32FC1);
+//    rot = getRotationMatrix2D(center, angle, scale);//getRotationMatrix2D():以X轴正方形为起点，顺时针为负，逆时针为正
+//    Mat rotimage;
+//    warpAffine(mat, rotimage, rot, mat.size());
+//    imshow("rotimage", rotimage);
+//    waitKey(0);
+}
 
+// fill boundary...
+void Choice::fillBoundary(vector<Point> points)
+{
+//    rectangle(img, boundingRect(points), cv::Scalar(0, 0, 0), CV_FILLED);
 }
