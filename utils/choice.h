@@ -12,7 +12,9 @@ public:
 
     void handleRecognition(string choiceFilePath);
 
-    void fillBoundary(vector<Point> points);
+    void fillBoundary(Mat dstImg, vector<vector<Point>> contours, int max, int min);
+
+    vector<Rect> handleChoiceItems(vector<vector<Point>> contours, int offset, int itemDis);
 };
 
 #endif // CHOICE_H

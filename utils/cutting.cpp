@@ -6,8 +6,7 @@ Cutting::Cutting()
 
 }
 
-
-void Cutting::saveContoures2Local(Mat mat, string filePath, vector<vector<Point>> contoures)
+void Cutting::saveContoures2Local(Mat mat, string filePath, vector<vector<Point>> contoures, int area)
 {
     int lastSlash = filePath.find_last_of("/");
     string parentPath = filePath.substr(0, lastSlash + 1);
@@ -25,7 +24,7 @@ void Cutting::saveContoures2Local(Mat mat, string filePath, vector<vector<Point>
     for(int i = 0; i < contoures.size(); i++)
     {
         Rect rect = boundingRect(contoures[i]);
-        if(rect.area() > 1000)
+        if(rect.area() > area)
         {
             mat(rect).copyTo(tmpImg);
             imwrite(folderPath + "/" + rectName + std::to_string(i) + ".png",  tmpImg);
