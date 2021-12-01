@@ -73,61 +73,151 @@ void Choice::handleRecognition(string choiceFilePath)
 //    GaussianBlur(dstImg, dstImg, Size(3,3), 0, 0);
     cv::Mat element = cv::getStructuringElement(0, cv::Size(4, 4));
     erode(dstImg, dstImg, element);
-    erode(dstImg, dstImg, element);
+//    erode(dstImg, dstImg, element);
 
     contours = boundary.handleBoundary(dstImg);
-    this->handleChoiceItems(contours, 36, 100);
+    this->handleChoiceItems(dstImg, contours, 20, 30);
 //    morphologyEx(dstImg, dstImg, cv::MORPH_CLOSE, element);
 
 //    Cutting cutting;
 //    cutting.saveContoures2Local(dstImg, choiceFilePath, contours, 100);
-    imshow("mat", dstImg);
-    waitKey(0);
+
+    imwrite("/home/branches/mat.png", dstImg);
 }
 
-
-//  direct_x  找到对应的选项的区域 handle group...
-vector<Rect> Choice::handleChoiceItems(vector<vector<Point>> contours, int offset, int itemDis)
+vector<vector<Point>> Choice::findNearContours(vector<Point> contour, vector<vector<Point>> contours,int offsetY, int offsetX)
 {
-    vector<Rect> results;
-    cout << "contours size is " << contours.size() << endl;
-    // find y value;
-    vector<int> valueYs;
+    Rect rect = boundingRect(contour);
+    int x = rect.tl().x;
+    int y = rect.tl().y;
+
+
+    // direx-x-left-slide
+    vector<Point> leftContour;
+    vector<Point> rightContour;
+
     for(size_t i = 0; i < contours.size(); i++)
     {
-        Rect rect = boundingRect(contours[i]);
-        if (i == 0)
-        {
-            valueYs.push_back(rect.tl().y);
-        }
-        else
-        {
-            int y = rect.tl().y;
-            int count = 0;
-            for(int j = 0; j < valueYs.size(); j++)
-            {
-                if (std::abs(y - valueYs[j]) < offset)
-                {
-                    count++;
-                    break;
+        Rect rec = boundingRect(contours[i]);
+        int recx = rec.x;
+        int recy = rec.y;
+
+        // skip self.
+        if (x == recx && y == recy){
+            continue;
+        } else {
+            if(abs(y - recy) < offsetY){
+                if(leftContour.size() == 0){
+                    if (recx < x && abs(x - recx) < offsetX){
+                       leftContour = contours[i];
+                    }
+                } else {
+                    Rect leftRec = boundingRect(leftContour);
+                    if (recx < x) {
+                        if (leftRec.tl().x < recx && abs(leftRec.tl().x - recx) < offsetX){
+                            leftContour = contours[i];
+                        }
+                    }
+
+                }
+
+
+                if (rightContour.size() == 0){
+                    if (recx > x && abs(x - recx) < offsetX){
+                        rightContour = contours[i];
+                    }
+                } else {
+                    Rect rightRec = boundingRect(rightContour);
+                    if(recx > x) {
+                        if (recx < rightRec.tl().x && abs(rightRec.tl().x - recx) < offsetX){
+                            rightContour = contours[i];
+                        }
+                    }
+
                 }
             }
-            if (count == 0)
-            {
-               valueYs.push_back(y);
-            }
         }
     }
 
+    vector<vector<Point>> nearContours;
+    nearContours.push_back(leftContour);
+    nearContours.push_back(rightContour);
+    return nearContours;
+}
 
-    for(int i = 0; i < valueYs.size(); i++ )
-    {
-        int y = valueYs[i];
+//  direct_x  找到对应的选项的区域 handle group...
+void Choice::handleChoiceItems(Mat mat, vector<vector<Point>> contours, int offsetY, int offsetX)
+{
+
+      // find A, B, C, D... center, found near contour.
+    int count = 0;
+    for(size_t i = 0; i < contours.size(); i++){
+      Rect rec = boundingRect(contours[i]);
+      // most probile is A, B, C, D block.
+      if (rec.height / rec.width < 2){
 
 
+          vector<vector<Point>> nearContours = this->findNearContours(contours[i], contours, offsetY, offsetX);
+          vector<Point> leftContour = nearContours[0];
+          vector<Point> rightContour = nearContours[1];
+
+          if(leftContour.size() == 0 || rightContour.size() == 0){
+              continue; // do nothing not A, B, C, D...
+          }
+
+          Rect leftRec = boundingRect(leftContour);
+          Rect rightRec = boundingRect(rightContour);
+          count++;
+          //
+          vector<Point>  contour;
+          contour.push_back(leftRec.tl());
+          contour.push_back(Point(rightRec.tl().x + rightRec.width , rightRec.tl().y ) );
+          contour.push_back(Point(rightRec.tl().x + rightRec.width, rightRec.tl().y + rightRec.height));
+          contour.push_back(Point(leftRec.tl().x , leftRec.tl().y + leftRec.height ));
+          fillConvexPoly(mat, contour, cv::Scalar(255,255,255));
+
+      }
     }
 
-    return results;
+//    vector<Rect> results;
+//    cout << "contours size is " << contours.size() << endl;
+//    // find y value;
+//    vector<int> valueYs;
+//    for(size_t i = 0; i < contours.size(); i++)
+//    {
+//        Rect rect = boundingRect(contours[i]);
+//        if (i == 0)
+//        {
+//            valueYs.push_back(rect.tl().y);
+//        }
+//        else
+//        {
+//            int y = rect.tl().y;
+//            int count = 0;
+//            for(int j = 0; j < valueYs.size(); j++)
+//            {
+//                if (std::abs(y - valueYs[j]) < offset)
+//                {
+//                    count++;
+//                    break;
+//                }
+//            }
+//            if (count == 0)
+//            {
+//               valueYs.push_back(y);
+//            }
+//        }
+//    }
+
+
+//    for(int i = 0; i < valueYs.size(); i++ )
+//    {
+//        int y = valueYs[i];
+
+
+//    }
+
+//    return results;
 }
 
 
@@ -149,8 +239,8 @@ void Choice::fillBoundary(Mat dstImg, vector<vector<Point>> contours, int max, i
             contour.push_back(Point(rec.tl().x , rec.tl().y + rec.height ));
 
           fillConvexPoly(dstImg, contour, cv::Scalar(255,255,255));
-//          fillPoly(dstImg, contour, Scalar(255,255,255));
-//            rectangle(dstImg, rec, Scalar(255,255,255), -1, 4);
+//        fillPoly(dstImg, contour, Scalar(255,255,255));
+//        rectangle(dstImg, rec, Scalar(255,255,255), -1, 4);
         }
 
     }

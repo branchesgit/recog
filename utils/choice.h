@@ -14,7 +14,9 @@ public:
 
     void fillBoundary(Mat dstImg, vector<vector<Point>> contours, int max, int min);
 
-    vector<Rect> handleChoiceItems(vector<vector<Point>> contours, int offset, int itemDis);
+    void handleChoiceItems(Mat mat, vector<vector<Point>> contours, int offsetY, int offsetX);
+
+    vector<vector<Point>> findNearContours(vector<Point> contour, vector<vector<Point>> contours,int offsetY, int offsetX);
 };
 
 #endif // CHOICE_H
