@@ -34,7 +34,7 @@ void Choice::handleRecognition(string choiceFilePath)
     Mat mat = imread(choiceFilePath);
     Mat grayImg, thresholdImg;
     cvtColor(mat, grayImg, cv::COLOR_BGR2GRAY);
-    threshold(grayImg, thresholdImg, 80, 255, THRESH_BINARY);
+    threshold(grayImg, thresholdImg, 128, 255, THRESH_BINARY);
     thresholdImg = ~thresholdImg;
     mat = thresholdImg.clone();
 
@@ -190,7 +190,7 @@ void Choice::fillBoundary(Mat dstImg, vector<vector<Point>> contours, int max, i
             contour.push_back(Point(rec.tl().x + rec.width , rec.tl().y + rec.height));
             contour.push_back(Point(rec.tl().x , rec.tl().y + rec.height ));
 
-          fillConvexPoly(dstImg, contour, cv::Scalar(255,255,255));
+            fillConvexPoly(dstImg, contour, cv::Scalar(255,255,255));
         }
 
     }
@@ -253,10 +253,10 @@ void Choice::handleChoiceItemBoundary(Mat mat, int offsetY, int offsetX) {
             Rect leftRec = boundingRect(cs[0]);
             Rect rightRec = boundingRect(cs[1]);
             vector<Point>  contour;
-            contour.push_back(leftRec.tl());
+            contour.push_back(Point(leftRec.tl().x - 12, leftRec.tl().y));
             contour.push_back(Point(rightRec.tl().x + rightRec.width , rightRec.tl().y ) );
             contour.push_back(Point(rightRec.tl().x + rightRec.width, rightRec.tl().y + rightRec.height));
-            contour.push_back(Point(leftRec.tl().x , leftRec.tl().y + leftRec.height ));
+            contour.push_back(Point(leftRec.tl().x - 16 , leftRec.tl().y + leftRec.height ));
             fillConvexPoly(mat, contour, cv::Scalar(255,255,255));
 
             if (leftRec.tl().x > rightRec.tl().x) {
@@ -269,7 +269,7 @@ void Choice::handleChoiceItemBoundary(Mat mat, int offsetY, int offsetX) {
         }
 
         Rect r = boundingRect(right);
-
+        int s = cs.size();
 
         // dy is less offsetY, dx less offsetX.
         for(size_t j = 0; j < contours.size(); j++) {
@@ -281,10 +281,12 @@ void Choice::handleChoiceItemBoundary(Mat mat, int offsetY, int offsetX) {
                         Rect leftRec = r;
                         Rect rightRec = boundingRect(contours[j]);
                         vector<Point>  contour;
-                        contour.push_back(leftRec.tl());
+                        bool isNumberRect = 1 == cs.size();
+
+                        contour.push_back(isNumberRect ? Point(leftRec.tl().x - 8, leftRec.tl().y) : leftRec.tl());
                         contour.push_back(Point(rightRec.tl().x + rightRec.width , rightRec.tl().y ) );
                         contour.push_back(Point(rightRec.tl().x + rightRec.width, rightRec.tl().y + rightRec.height));
-                        contour.push_back(Point(leftRec.tl().x , leftRec.tl().y + leftRec.height ));
+                        contour.push_back(Point(isNumberRect ? leftRec.tl().x - 8 : leftRec.tl().x, leftRec.tl().y + leftRec.height ));
                         fillConvexPoly(mat, contour, cv::Scalar(255,255,255));
 
                         cs.push_back(contours[j]);

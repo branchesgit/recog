@@ -6,6 +6,7 @@
 #include "utils/boundary.h"
 #include "utils/cutting.h"
 #include "utils/choice.h"
+#include "utils/choiceitem.h"
 
 using namespace std;
 using namespace cv;
@@ -31,8 +32,13 @@ int main(int argc, char *argv[])
 //    Cutting cutting;
 //    cutting.saveContoures2Local(mat, templateFilePath, contours);
 
-    string choiceFilePath = "/home/branches/branches/answercards/files/DN1109000001/rect_770.png";
-    Choice choice;
-    choice.handleRecognition(choiceFilePath);
+//    string choiceFilePath = "/home/branches/branches/answercards/files/DN1109000001/rect_770.png";
+//    Choice choice;
+//    choice.handleRecognition(choiceFilePath);
+    string filePath = "/home/branches/mat/rect_19.png";
+    ChoiceItem item;
+    Mat mat = imread(filePath);
+
+    item.cuttingChoiceItem(mat);
     return 0;
 }
