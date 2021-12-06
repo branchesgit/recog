@@ -32,5 +32,6 @@ void Cutting::saveContoures2Local(Mat mat, string filePath, vector<vector<Point>
 
     }
 
-
 }
+
+

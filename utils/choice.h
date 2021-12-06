@@ -18,7 +18,7 @@ public:
 
     vector<vector<Point>> findNearContours(vector<Point> contour, vector<vector<Point>> contours,int offsetY, int offsetX);
     
-    void handleChoiceItemBoundary(Mat mat, int offsetY);
+    void handleChoiceItemBoundary(Mat mat, int offsetY, int offsetX);
 };
 
 #endif // CHOICE_H

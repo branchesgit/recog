@@ -15,6 +15,7 @@ public:
     Cutting();
     // save image.
     void saveContoures2Local(Mat mat, string filePath, vector<vector<Point>> contoures, int area);
+
 };
 
 #endif // CUTING_H

@@ -61,9 +61,14 @@ void Choice::handleRecognition(string choiceFilePath)
 
     contours = boundary.handleBoundary(dstImg);
     this->handleChoiceItems(dstImg, contours, 20, 25);
-    this->handleChoiceItemBoundary(dstImg, 20);
+    this->handleChoiceItemBoundary(dstImg, 20, 36);
 
-    imwrite("/home/branches/mat.png", dstImg);
+    string path = "/home/branches/mat.png";
+    imwrite(path, dstImg);
+    contours = boundary.handleBoundary(dstImg);
+    Cutting cutting;
+    cutting.saveContoures2Local(mat, path, contours, 1200);
+
 }
 
 vector<vector<Point>> Choice::findNearContours(vector<Point> contour, vector<vector<Point>> contours,int offsetY, int offsetX)
@@ -187,7 +192,7 @@ bool sortX(vector<Point> a, vector<Point> b) {
 }
 
 
-void Choice::handleChoiceItemBoundary(Mat mat, int offsetY) {
+void Choice::handleChoiceItemBoundary(Mat mat, int offsetY, int offsetX) {
 
     Boundary boundary;
     vector<vector<Point>> contours = boundary.handleBoundary(mat);
@@ -199,7 +204,7 @@ void Choice::handleChoiceItemBoundary(Mat mat, int offsetY) {
 
         if (scale >= 1.0) {
             if (rect.tl().x > 10 && rect.tl().y > 10){
-                rectangle(mat, rect, (0, 100, 100), 3);
+//                rectangle(mat, rect, (0, 100, 100), 3);
                 numbers.push_back(contours[i]);
             }
         }
@@ -228,15 +233,61 @@ void Choice::handleChoiceItemBoundary(Mat mat, int offsetY) {
 
     }
 
-    for(int i = 0; i < numberGroups.size(); i++) {
+    //
+    sort(contours.begin(), contours.end(), sortX);
+    for(size_t i = 0; i < numberGroups.size(); i++) {
         vector<vector<Point>> cs = numberGroups[i];
-        if(cs.size() > 1) {
-//            cout << "size is " << cs.size() << endl;
+        vector<Point> right;
 
+        if(cs.size() > 1) {
+            cout << "size is " << cs.size() << endl;
+            Rect leftRec = boundingRect(cs[0]);
+            Rect rightRec = boundingRect(cs[1]);
+            vector<Point>  contour;
+            contour.push_back(leftRec.tl());
+            contour.push_back(Point(rightRec.tl().x + rightRec.width , rightRec.tl().y ) );
+            contour.push_back(Point(rightRec.tl().x + rightRec.width, rightRec.tl().y + rightRec.height));
+            contour.push_back(Point(leftRec.tl().x , leftRec.tl().y + leftRec.height ));
+            fillConvexPoly(mat, contour, cv::Scalar(255,255,255));
+
+            if (leftRec.tl().x > rightRec.tl().x) {
+                right = cs[0];
+            } else {
+                right = cs[1];
+            }
+        } else {
+            right = cs[0];
         }
 
-         cout << "size is " << cs.size() << endl;
+        Rect r = boundingRect(right);
+
+
+        // dy is less offsetY, dx less offsetX.
+        for(size_t j = 0; j < contours.size(); j++) {
+            Rect rect = boundingRect(contours[j]);
+
+            if (rect.tl().x > 10 && rect.tl().y > 10) {
+                if (abs(r.tl().y - rect.tl().y) < offsetY) {
+                    if (abs(r.tl().x + r.width - rect.tl().x) < offsetX) {
+                        Rect leftRec = r;
+                        Rect rightRec = boundingRect(contours[j]);
+                        vector<Point>  contour;
+                        contour.push_back(leftRec.tl());
+                        contour.push_back(Point(rightRec.tl().x + rightRec.width , rightRec.tl().y ) );
+                        contour.push_back(Point(rightRec.tl().x + rightRec.width, rightRec.tl().y + rightRec.height));
+                        contour.push_back(Point(leftRec.tl().x , leftRec.tl().y + leftRec.height ));
+                        fillConvexPoly(mat, contour, cv::Scalar(255,255,255));
+
+                        cs.push_back(contours[j]);
+                        r = boundingRect(contours[j]);
+                    }
+                }
+            }
+        }
+
     }
+
+
 
 }
 
