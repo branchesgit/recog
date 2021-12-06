@@ -94,7 +94,7 @@ vector<Mat> ChoiceItem::cuttingChoiceItem(Mat mat) {
 
     erode(dstImage, dstImage, element);
     contours = boundary.handleBoundary(dstImage);
-
+    sort(contours.begin(), contours.end(), sortXX);
     string path = "/home/branches/mat/ss.png";
     imwrite(path, dstImage);
     Cutting cutting;
