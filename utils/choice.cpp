@@ -27,6 +27,10 @@ bool sortContour(vector<Point> a, vector<Point> b)
 void Choice::handleRecognition(string choiceFilePath)
 {
 //    choiceFilePath = "/home/branches/branches/answercards/files/DN1109000001/rect_770.png";
+    std::chrono::milliseconds ms = std::chrono::duration_cast< std::chrono::milliseconds >(
+            std::chrono::system_clock::now().time_since_epoch()
+        );
+
     Mat mat = imread(choiceFilePath);
     Mat grayImg, thresholdImg;
     cvtColor(mat, grayImg, cv::COLOR_BGR2GRAY);
@@ -68,6 +72,11 @@ void Choice::handleRecognition(string choiceFilePath)
     contours = boundary.handleBoundary(dstImg);
     Cutting cutting;
     cutting.saveContoures2Local(mat, path, contours, 1200);
+    std::chrono::milliseconds ms1 = std::chrono::duration_cast< std::chrono::milliseconds >(
+            std::chrono::system_clock::now().time_since_epoch()
+        );
+
+    cout << "time spend is " << ms1.count() - ms.count() << endl;
 
 }
 
@@ -286,85 +295,7 @@ void Choice::handleChoiceItemBoundary(Mat mat, int offsetY, int offsetX) {
         }
 
     }
-
-
-
 }
-
-// find number;
-//void Choice::handleChoiceItemBoundary(Mat mat, int offsetY){
-//    Boundary boundary;
-//    vector<vector<Point>> contours = boundary.handleBoundary(mat);
-//    int count = 4;
-
-//    for(size_t i = 0; i < contours.size(); i++) {
-//        Rect rect = boundingRect(contours[i]);
-//        // most is number boundary. search right boundary. deriect-x.
-//        cout << "scale is " << rect.height / rect.width << endl;
-//        rectangle(mat, rect, (125, 125, 125));
-//        if ((rect.height / rect.width) > 1) {
-
-//            int x = rect.tl().x;
-//            int y = rect.tl().y;
-
-//            vector<vector<Point>> groups;
-
-//            for(size_t k = 0; k < contours.size(); k++) {
-//                if (k != i) {
-//                    Rect rec = boundingRect(contours[k]);
-//                    int rx = rec.tl().x;
-//                    int ry = rec.tl().y;
-
-//                    if (abs(ry - y) < offsetY) {
-//                        if (rx > x) {
-//                            if (groups.size() < count) {
-//                                groups.push_back(contours[i]);
-//                            } else {
-//                                // find the nearest contour.
-//                                for(int j = 0; j < groups.size(); j++) {
-//                                    Rect grect = boundingRect(groups[j]);
-//                                    int gx = grect.x;
-
-//                                    if(gx > rx) {
-//                                        groups[j] = contours[k];
-//                                        break;
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-
-
-//            groups.push_back(contours[i]);
-//            if (groups.size() == count) {
-//                sort(groups.begin(), groups.end(), sortX);
-//            }
-
-//            cout << "size is " << groups.size();
-
-//          groups.insert(groups.begin(), contours[i]);
-//            for(int i = 0; i < groups.size() - 1; i++) {
-//                Rect leftRec = boundingRect(groups[i]);
-//                Rect rightRec = boundingRect(groups[i+1]);
-
-//                //
-//                vector<Point>  contour;
-//                contour.push_back(leftRec.tl());
-//                contour.push_back(Point(rightRec.tl().x + rightRec.width , rightRec.tl().y ) );
-//                contour.push_back(Point(rightRec.tl().x + rightRec.width, rightRec.tl().y + rightRec.height));
-//                contour.push_back(Point(leftRec.tl().x , leftRec.tl().y + leftRec.height ));
-//                fillConvexPoly(mat, contour, cv::Scalar(255,255,255));
-//            }
-
-//        }
-
-//    }
-
-//}
-
-
 
 
 
