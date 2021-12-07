@@ -16,7 +16,27 @@ SOURCES += main.cpp \
     utils/boundary.cpp \
     utils/cutting.cpp \
     utils/choice.cpp \
-    utils/choiceitem.cpp
+    utils/choiceitem.cpp \
+    utils/feature.cpp \
+    utils/parseintputjson.cpp \
+    items/settingcontent.cpp \
+    items/supercontent.cpp \
+    items/cardcontent.cpp \
+    items/serialnumber.cpp \
+    items/number.cpp \
+    items/radio.cpp \
+    items/checkbox.cpp \
+    items/trueorfalse.cpp \
+    items/subjectiveitem.cpp \
+    items/absentflag.cpp \
+    items/itemsblock.cpp \
+    items/radiosimple.cpp \
+    items/cardscore.cpp \
+    items/pixelspercentscore.cpp \
+    items/handwritingstudentno.cpp \
+    items/handwritingcardscore.cpp \
+    utils/imagemat.cpp \
+    utils/util.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -32,7 +52,27 @@ HEADERS += utils/File.h \
     utils/boundary.h \
     utils/cutting.h \
     utils/choice.h \
-    utils/choiceitem.h
+    utils/choiceitem.h \
+    utils/feature.h \
+    utils/parseintputjson.h \
+    items/settingcontent.h \
+    items/supercontent.h \
+    items/cardcontent.h \
+    items/serialnumber.h \
+    items/number.h \
+    items/radio.h \
+    items/checkbox.h \
+    items/trueorfalse.h \
+    items/subjectiveitem.h \
+    items/absentflag.h \
+    items/itemsblock.h \
+    items/radiosimple.h \
+    items/cardscore.h \
+    items/pixelspercentscore.h \
+    items/handwritingstudentno.h \
+    items/handwritingcardscore.h \
+    utils/imagemat.h \
+    utils/util.h
 
 INCLUDEPATH += /home/branches/clibs/jsoncpp/include \
              /home/branches/clibs/jsoncpp/src/lib_json \
