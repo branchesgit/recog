@@ -16,7 +16,9 @@ SOURCES += main.cpp \
     utils/boundary.cpp \
     utils/cutting.cpp \
     utils/choice.cpp \
-    utils/choiceitem.cpp
+    utils/choiceitem.cpp \
+    utils/linefinder.cpp \
+    utils/common.cpp
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -32,7 +34,9 @@ HEADERS += utils/File.h \
     utils/boundary.h \
     utils/cutting.h \
     utils/choice.h \
-    utils/choiceitem.h
+    utils/choiceitem.h \
+    utils/linefinder.h \
+    utils/common.h
 
 INCLUDEPATH += /home/branches/clibs/jsoncpp/include \
              /home/branches/clibs/jsoncpp/src/lib_json \

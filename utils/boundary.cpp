@@ -17,6 +17,7 @@ vector<vector<Point>>  Boundary::handleBoundary(Mat mat)
     findContours(mat, contours, hierarchy,
                  RetrievalModes::RETR_LIST, ContourApproximationModes::CHAIN_APPROX_NONE, Point());
 
+
     return contours;
 }
 
