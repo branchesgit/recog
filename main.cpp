@@ -46,104 +46,119 @@ int main(int argc, char *argv[])
 
 //    item.cuttingChoiceItem(mat);
 
-    string filePath = "/home/branches/branches/qt/recog/1.jpeg";
+    string filePath = "/home/branches/qt/recog/2.TIF";
     Mat mat = imread(filePath);
     cvtColor(mat, mat,ColorConversionCodes::COLOR_BGR2GRAY);
     Mat element = cv::getStructuringElement(MorphShapes::MORPH_RECT, Size(4, 4));
     threshold(mat, mat, 120, 255, 0);
-     //先腐蚀再膨胀，用来消除小物体
-    morphologyEx(mat, mat, MORPH_OPEN, element);
-    morphologyEx(mat, mat, MORPH_OPEN, element);
-    morphologyEx(mat, mat, MORPH_OPEN, element);
 
-    morphologyEx(mat, mat, MORPH_GRADIENT, element);
-    morphologyEx(mat, mat, MORPH_CLOSE, element);
-    morphologyEx(mat, mat, MORPH_CLOSE, element);
-    morphologyEx(mat, mat, MORPH_CLOSE, element);
+     //先腐蚀再膨胀，用来消除小物体
+//    morphologyEx(mat, mat, MORPH_OPEN, element);
+//    morphologyEx(mat, mat, MORPH_OPEN, element);
+//    morphologyEx(mat, mat, MORPH_OPEN, element);
+
+//    morphologyEx(mat, mat, MORPH_TOPHAT, element);
+//    morphologyEx(mat, mat, MORPH_CLOSE, element);
+//    morphologyEx(mat, mat, MORPH_CLOSE, element);
+//    morphologyEx(mat, mat, MORPH_CLOSE, element);
+//    morphologyEx(mat, mat, MORPH_CLOSE, element);
     threshold(mat, mat, 120, 255, 0);
-//    mat = ~mat;
+    mat = ~mat;
+
+    Mat cimg;
+    mat(Rect(844, 263, 322, 292)).copyTo(cimg);
+
     Boundary boundary;
     int count = 0;
     vector<vector<Point>> rects;
-    vector<vector<Point>> contours = boundary.handleBoundary(mat);
+    vector<vector<Point>> contours = boundary.handleBoundary(cimg);
     for(size_t i = 0; i < contours.size(); i++) {
         Rect rect = boundingRect(contours[i]);
-        if(rect.area() > 500 && rect.area() < 800) {
-            cv::rectangle(mat, rect, cv::Scalar(0, 255, 255), 1);
-//            cout << std::to_string(count)  << "=" << rect.area() << endl;
-            count++;
+
+        if (rect.height > 292 * 0.4 || (rect.width > 25  && rect.width < 35)) {
+            rectangle(cimg, rect, (0, 100, 100), 2);
             rects.push_back(contours[i]);
         }
+//        if(rect.area() > 500 && rect.area() < 800) {
+//            cv::rectangle(cimg, rect, cv::Scalar(0, 255, 255), 1);
+//            cout << std::to_string(count)  << "=" << rect.area() << endl;
+//            count++;
+//            rects.push_back(contours[i]);
+//        }
     }
+
+    Cutting cutting;
+    cutting.saveContoures2Local(cimg, "/home/branches/qt/recog/2.TIF", rects, 0);
 
     // need to judge rect is around.
     // 10 rects to group.
 
-    sort(rects.begin(), rects.end(), Common::sortX);
-    cout << "rects size is " << rects.size() << endl;
+//    sort(rects.begin(), rects.end(), Common::sortX);
+//    cout << "rects size is " << rects.size() << endl;
 
-    for(int i = 0; i < rects.size(); i++) {
-        cout << "X is " << boundingRect(rects[i]).x << endl;
-    }
+//    for(int i = 0; i < rects.size(); i++) {
+//        cout << "X is " << boundingRect(rects[i]).x << endl;
+//    }
 
-    vector<vector<vector<Point>>> groups{};
-    Rect rect;
-    Rect rec;
-    vector<vector<Point>> group{};
-    for(int i = 0; i < rects.size(); i++) {
-        rect = boundingRect(rects[i]);
-        int idx = -1;
+//    vector<vector<vector<Point>>> groups{};
+//    Rect rect;
+//    Rect rec;
+//    vector<vector<Point>> group{};
+//    for(int i = 0; i < rects.size(); i++) {
+//        rect = boundingRect(rects[i]);
+//        int idx = -1;
 
-        if (groups.size() > 0) {
-            group = groups.at(groups.size() - 1);
-        }
+//        if (groups.size() > 0) {
+//            group = groups.at(groups.size() - 1);
+//        }
 
-        for(int j = 0; j < group.size(); j++) {
-            rec = boundingRect(group.at(j));
-            int dis = abs(rect.x - rec.x);
+//        for(int j = 0; j < group.size(); j++) {
+//            rec = boundingRect(group.at(j));
+//            int dis = abs(rect.x - rec.x);
 
-            if (dis < 30) {
-                idx = j;
-                break;
-            }
-        }
+//            if (dis < 30) {
+//                idx = j;
+//                break;
+//            }
+//        }
 
-        cout << "group size is " << group.size() << ", idx = " << idx << endl;
-        if (idx == -1) {
-            vector<vector<Point>> grp{};
-            grp.emplace_back(rects[i]);
-            groups.push_back(grp);
-        } else {
-            group.emplace_back(rects[i]);
-            groups[groups.size() - 1] = group;
-        }
-    }
+//        cout << "group size is " << group.size() << ", idx = " << idx << endl;
+//        if (idx == -1) {
+//            vector<vector<Point>> grp{};
+//            grp.emplace_back(rects[i]);
+//            groups.push_back(grp);
+//        } else {
+//            group.emplace_back(rects[i]);
+//            groups[groups.size() - 1] = group;
+//        }
+//    }
 
-    for(int i = 0; i < groups.size(); i++) {
-        vector<vector<Point>> group = groups[i];
+//    for(int i = 0; i < groups.size(); i++) {
+//        vector<vector<Point>> group = groups[i];
 
-        if (group.size() > 7) {
-            sort(group.begin(), group.end(), Common::sortY);
+//        if (group.size() > 7) {
+//            sort(group.begin(), group.end(), Common::sortY);
 
-            for(int j = 0; j < group.size() - 1; j++) {
-                Rect top = boundingRect(group[j]);
-                Rect bottom = boundingRect(group[j + 1]);
+//            for(int j = 0; j < group.size() - 1; j++) {
+//                Rect top = boundingRect(group[j]);
+//                Rect bottom = boundingRect(group[j + 1]);
 
-                vector<Point>  contour;
-                contour.push_back(top.tl());
-                contour.push_back(Point(top.tl().x + top.width , top.tl().y ) );
-                contour.push_back(Point(bottom.tl().x + bottom.width , bottom.tl().y + rec.height));
-                contour.push_back(Point(bottom.tl().x , bottom.tl().y + bottom.height ));
+//                vector<Point>  contour;
+//                contour.push_back(top.tl());
+//                contour.push_back(Point(top.tl().x + top.width , top.tl().y ) );
+//                contour.push_back(Point(bottom.tl().x + bottom.width , bottom.tl().y + rec.height));
+//                contour.push_back(Point(bottom.tl().x , bottom.tl().y + bottom.height ));
 
-                fillConvexPoly(mat, contour, cv::Scalar(255,255,255));
-            }
-        }
-    }
+//                fillConvexPoly(cimg, contour, cv::Scalar(255,255,255));
+//            }
+//        }
+//    }
 
 
-
-    imshow("image", mat);
+    cv::namedWindow("camera", 0);
+    cv::imshow("camera", cimg);
     waitKey(0);
+
     return 0;
 
 //    cv::Mat image = cv::imread(filePath);
